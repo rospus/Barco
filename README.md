@@ -17,9 +17,7 @@ barcode-reader-app
 ```
 ## Usage
 To start the application, upload the files to web a server and browse.
-```
-npm start
-```
+
 This will launch the app in your default web browser.
 
 ## Contributing
