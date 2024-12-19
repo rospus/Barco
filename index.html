@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scansione Codice a Barre</title>
+
+  <!-- Inclusione di Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Inclusione di Axios -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  
+  <script src="https://unpkg.com/@zxing/library@latest"></script> <!-- Libreria per la scansione di codici a barre e QR code -->
+
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+    }
+    .main-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .content {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      position: relative; /* Per posizionare le linee */
+    }
+    #video {
+      width: 100%; /* Larghezza al 100% */
+      height: 100vw; /* L'altezza sarà uguale alla larghezza */
+      max-height: 100%; /* Assicura che non superi la pagina */
+      object-fit: cover; /* Rende l'area della fotocamera centrale */
+      display: none;
+    }
+    #scan-line {
+      width: 60%; /* Larghezza ridotta al 60% */
+      height: 2px;
+      background-color: red;
+      opacity: 0.2; /* Trasparenza al 20% */
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%); /* Centra la linea sia orizzontalmente che verticalmente */
+      z-index: 10; /* Assicuriamoci che la linea stia sopra il video */
+      display: none; /* Linea nascosta fino all'attivazione della fotocamera */
+    }
+    footer {
+      display: flex;
+      justify-content: flex-start; /* Allinea il testo a sinistra */
+      flex-direction: column;
+      padding: 10px;
+      background-color: #f8f9fa;
+      font-size: 12px; /* Riduce la dimensione del font */
+      line-height: 0.25; /* Riduce l'altezza delle righe del 75% */
+    }
+    .footer-content {
+      text-align: left; /* Testo allineato a sinistra */
+    }
+    .barcode-result {
+      font-size: 24px; /* Ingrandisce il font del barcode */
+      text-align: center; /* Giustifica il barcode al centro */
+      font-weight: bold;
+      line-height: normal; /* Mantiene l'interlinea normale per il barcode */
+    }
+    .footer-btn {
+      display: flex;
+      justify-content: center;
+    }
+    button {
+      position: relative;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-container">
+    <!-- Contenuto principale con la finestra di scansione -->
+    <div class="content">
+      <!-- Video per la scansione del codice a barre -->
+      <video id="video" class="mb-3"></video>
+      <!-- Linea di scansione rossa -->
+      <div id="scan-line"></div> <!-- Linea rossa centrale -->
+    </div>
+
+    <!-- Pulsante in basso -->
+    <div class="footer-btn">
+      <button id="start-scan" class="btn btn-primary btn-lg">Scan</button>
+    </div>
+
+    <!-- Footer con i risultati -->
+    <footer>
+      <div class="footer-content">
+        <p class="barcode-result"><span id="barcode-result">None</span></p> <!-- Risultato della scansione del codice a barre ingrandito e centrato -->
+        <p>Latitude: <span id="latitude">Unknown</span></p> <!-- Coordinate GPS -->
+        <p>Longitude: <span id="longitude">Unknown</span></p> <!-- Coordinate GPS -->
+        <p>Accuracy: <span id="accuracy">Unknown</span></p> <!-- Accuratezza del punto -->
+        <p>Altitude: <span id="altitude">Unknown</span></p> <!-- Altitudine -->
+        <p>Timestamp: <span id="timestamp">N/A</span></p> <!-- Timestamp GPS -->
+        <p>Bearing: <span id="bearing">Unknown</span></p> <!-- Direzione -->
+        <p>Speed: <span id="speed">Unknown</span></p> <!-- Velocità -->
+        <p>POST Data: <span id="post-data">N/A</span></p> <!-- Stringa POST -->
+        <p>Response: <span id="server-response">N/A</span></p> <!-- Risposta dal server -->
+      </div>
+    </footer>
+  </div>
+
+  <!-- Script JavaScript -->
+  <script>
+    // Variabili per il video, output e linee di scansione
+    const videoElement = document.getElementById('video');
+    const barcodeResultElement = document.getElementById('barcode-result');
+    const latitudeElement = document.getElementById('latitude');
+    const longitudeElement = document.getElementById('longitude');
+    const accuracyElement = document.getElementById('accuracy'); // Accuratezza
+    const altitudeElement = document.getElementById('altitude'); // Altitudine
+    const timestampElement = document.getElementById('timestamp'); // Timestamp GPS
+    const bearingElement = document.getElementById('bearing'); // Direzione
+    const speedElement = document.getElementById('speed'); // Velocità
+    const postDataElement = document.getElementById('post-data'); // Dati POST visualizzati
+    const responseElement = document.getElementById('server-response'); // Risposta del server visualizzata
+    const startScanButton = document.getElementById('start-scan');
+    const scanLineElement = document.getElementById('scan-line'); // La linea di scansione centrale
+
+    // Libreria per la scansione dei codici a barre 1D, 2D e Datamatrix
+    const codeReader = new ZXing.BrowserMultiFormatReader(); // Supporta barcode 1D, 2D e Datamatrix
+
+    // Funzione per ottenere il timestamp dal punto GPS in formato ISO 8601 con millisecondi a 2 cifre e fuso orario
+    function getGPSTimestamp(position) {
+      const date = new Date(position.timestamp); // Ottiene il timestamp GPS in millisecondi
+
+      // Ottiene le ore e i minuti di offset di fuso orario
+      const offset = -date.getTimezoneOffset();
+      const sign = offset >= 0 ? '+' : '-';
+      const hours = String(Math.floor(Math.abs(offset) / 60)).padStart(2, '0');
+      const minutes = String(Math.abs(offset) % 60).padStart(2, '0');
+
+      // Formatta il timestamp in ISO 8601 con due cifre per i millisecondi e fuso orario
+      const isoString = date.toISOString().replace(/\.\d{3}Z$/, '');
+      const milliseconds = String(Math.floor(date.getMilliseconds() / 10)).padStart(2, '0'); // Millisecondi con 2 cifre
+
+      return `${isoString}.${milliseconds}${sign}${hours}:${minutes}`;
+    }
+
+    // Funzione per ottenere le coordinate GPS
+    function getGPSLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          const coords = position.coords;
+          latitudeElement.textContent = coords.latitude;
+          longitudeElement.textContent = coords.longitude;
+          accuracyElement.textContent = coords.accuracy + ' meters';
+          altitudeElement.textContent = coords.altitude !== null ? coords.altitude + ' meters' : 'Not available';
+          timestampElement.textContent = getGPSTimestamp(position); // Imposta il timestamp GPS formattato
+          bearingElement.textContent = coords.heading !== null ? coords.heading + ' degrees' : 'Not available';
+          speedElement.textContent = coords.speed !== null ? coords.speed + ' m/s' : 'Not available';
+
+          // Inviare i dati GPS e il risultato del barcode al server
+          postDataToServer(coords.latitude, coords.longitude, coords.accuracy, coords.altitude, coords.heading, coords.speed, barcodeResultElement.textContent, getGPSTimestamp(position));
+        }, (error) => {
+          console.error('Error getting location', error);
+          latitudeElement.textContent = "Unable to get location";
+          longitudeElement.textContent = "Unable to get location";
+          accuracyElement.textContent = "Unavailable";
+          altitudeElement.textContent = "Unavailable";
+          timestampElement.textContent = "Unavailable";
+          bearingElement.textContent = "Unavailable";
+          speedElement.textContent = "Unavailable";
+        });
+      } else {
+        latitudeElement.textContent = "Geolocation not supported";
+        longitudeElement.textContent = "Geolocation not supported";
+        accuracyElement.textContent = "Unavailable";
+        altitudeElement.textContent = "Unavailable";
+        timestampElement.textContent = "Unavailable";
+        bearingElement.textContent = "Unavailable";
+        speedElement.textContent = "Unavailable";
+      }
+    }
+
+    // Funzione per inviare i dati al server in formato x-www-form-urlencoded e mostrare la stringa POST e la risposta nel footer
+    function postDataToServer(lat, lon, accuracy, altitude, bearing, speed, barcode, timestamp) {
+      const data = new URLSearchParams();
+      data.append('nome_disp', "ONL00");
+      data.append('codice_disp', "0000");
+      data.append('stato', "10");
+      data.append('barcode', barcode);
+      data.append('lat', lat);
+      data.append('lon', lon);
+      data.append('accuratezza', accuracy);
+      data.append('data', timestamp);
+      data.append('tag', "test_online");
+      data.append('altitudine', altitude);
+      data.append('bearing', bearing);
+      data.append('velocita', speed);
+
+      // Mostra la stringa POST nel footer
+      postDataElement.textContent = data.toString();
+
+      axios.post('https://gips.xyz/incoming/in_post.php', data)
+        .then(response => {
+          console.log('Dati inviati con successo:', response.data);
+          // Mostra la risposta del server nel footer
+          responseElement.textContent = JSON.stringify(response.data);
+        })
+        .catch(error => {
+          console.error('Errore durante l\'invio dei dati:', error.response ? error.response.data : error.message);
+          // Mostra l'errore del server nel footer
+          responseElement.textContent = error.response ? JSON.stringify(error.response.data) : error.message;
+        });
+    }
+
+    // Funzione per ripristinare i dati del footer al caricamento della pagina
+    function resetFooterData() {
+      barcodeResultElement.textContent = "None";
+      latitudeElement.textContent = "Unknown";
+      longitudeElement.textContent = "Unknown";
+      accuracyElement.textContent = "Unknown";
+      altitudeElement.textContent = "Unknown";
+      timestampElement.textContent = "N/A";
+      bearingElement.textContent = "Unknown";
+      speedElement.textContent = "Unknown";
+      postDataElement.textContent = "N/A";
+      responseElement.textContent = "N/A";
+    }
+
+    // Funzione per avviare la scansione del codice a barre 1D, 2D e Datamatrix
+    function startBarcodeScan() {
+      // Mostra il video per la scansione del codice a barre e la linea di scansione rossa
+      videoElement.style.display = 'block';
+      scanLineElement.style.display = 'block'; // Mostra la linea centrale
+
+      // Forzare l'uso della fotocamera posteriore con autozoom (se supportato)
+      const constraints = {
+        video: {
+          facingMode: { exact: "environment" },
+          zoom: true,  // Prova ad attivare il supporto allo zoom
+          advanced: [{ focusMode: "continuous" }] // Prova a forzare l'auto-focus continuo
+        }
+      };
+
+      navigator.mediaDevices.getUserMedia(constraints)
+        .then((stream) => {
+          videoElement.srcObject = stream;
+          videoElement.play();
+
+          // Scansione del codice a barre dal video
+          codeReader.decodeOnceFromStream(stream, videoElement)
+            .then((result) => {
+              barcodeResultElement.textContent = result.text; // Visualizza il risultato della scansione nel footer
+              videoElement.style.display = 'none'; // Nascondi il video dopo la scansione
+              scanLineElement.style.display = 'none'; // Nascondi la linea centrale
+              stream.getTracks().forEach(track => track.stop()); // Ferma lo stream
+
+              // Effettua una chiamata POST con il risultato del barcode
+              getGPSLocation(); // Chiamata per ottenere il GPS e inviare i dati
+            })
+            .catch((err) => {
+              console.error('Error scanning barcode', err);
+              barcodeResultElement.textContent = "Error scanning barcode";
+              videoElement.style.display = 'none'; // Nascondi il video in caso di errore
+              scanLineElement.style.display = 'none'; // Nascondi la linea centrale
+              stream.getTracks().forEach(track => track.stop()); // Ferma lo stream
+            });
+        })
+        .catch((err) => {
+          console.error('Error accessing camera', err);
+        });
+    }
+
+    // Event listener per il pulsante "Scan"
+    startScanButton.addEventListener('click', () => {
+      // Avviare la scansione del codice a barre
+      startBarcodeScan();
+    });
+
+    // Ripristina i dati al caricamento della pagina
+    window.onload = () => {
+      resetFooterData(); // Ripristina i dati del footer
+    };
+  </script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
