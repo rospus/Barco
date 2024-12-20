@@ -12,7 +12,14 @@ The Barcode Reader App is a web application designed to scan barcodes and forwar
 ```
 barcode-reader-app
 ├── public
-│   └── index.html
+│   └── ├── index.html
+│       ├── scan.html
+│       ├── settings
+│       ├── status.html
+│       ├── credits.html
+│       ├── assets.html
+│           └── index.css
+│           ├── app.js
 └── README.md
 ```
 ## Usage
