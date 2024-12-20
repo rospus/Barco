@@ -15,6 +15,10 @@
     <style>
         body {
             font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
         }
         .header {
             background-color: #f8f9fa;
@@ -23,12 +27,15 @@
             font-size: 24px;
             font-weight: bold;
         }
-        .footer {
-            text-align: center;
-            padding: 10px;
-            background-color: #f8f9fa;
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-        .footer .btn {
+        .btn-start {
+            margin-top: 40px;
             background-color: #007bff;
             color: white;
         }
@@ -36,20 +43,13 @@
 </head>
 <body>
     <header class="header">BARCO</header>
-    <main class="container mt-4">
+    <main class="content">
         <table class="table">
-            <thead>
-                <tr>
-                    <th style="width: 30%;">Colonna 1</th>
-                    <th style="width: 50%;">Colonna 2</th>
-                    <th style="width: 20%;">Colonna 3</th>
-                </tr>
-            </thead>
             <tbody>
                 <tr>
-                    <td>Agenzia</td>
-                    <td></td>
-                    <td></td>
+                    <td style="width: 30%;">Agenzia</td>
+                    <td style="width: 50%;"></td>
+                    <td style="width: 20%;"></td>
                 </tr>
                 <tr>
                     <td>Utente</td>
@@ -71,18 +71,10 @@
                     <td></td>
                     <td></td>
                 </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
             </tbody>
         </table>
+        <button class="btn btn-start" onclick="window.location.replace('scan.html')">INIZIO</button>
     </main>
-    <footer class="footer">
-        <button class="btn" onclick="window.location.replace('scan.html')">INIZIO</button>
-    </footer>
-
     <!-- Include Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
