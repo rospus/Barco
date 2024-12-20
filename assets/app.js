@@ -48,22 +48,35 @@ function getGPSLocation() {
   }
 }
 
-// Funzione per inviare i dati al server
-function postDataToServer(coords, timestamp) {
-  const data = new URLSearchParams({
-    nome_disp: "ONL00",
-    codice_disp: "0000",
-    stato: "10",
-    barcode: barcodeResultElement.textContent,
-    lat: coords.latitude,
-    lon: coords.longitude,
-    accuratezza: coords.accuracy,
-    data: timestamp,
-    tag: "test_online",
-    altitudine: coords.altitude || 'N/A',
-    bearing: coords.heading || 'N/A',
-    velocita: coords.speed || 'N/A'
-  });
+function postDataToServer(lat, lon, accuracy, altitude, bearing, speed, barcode, timestamp) {
+  const data = new URLSearchParams();
+  data.append('nome_disp', "ONL00");
+  data.append('codice_disp', "0000");
+  data.append('stato', "10");
+  data.append('barcode', barcode);
+  data.append('lat', lat);
+  data.append('lon', lon);
+  data.append('accuratezza', accuracy);
+  data.append('data', timestamp);
+  data.append('tag', "test_online");
+  data.append('altitudine', altitude);
+  data.append('bearing', bearing);
+  data.append('velocita', speed);
+
+  // Effettua la chiamata POST
+  axios.post('https://gips.xyz/incoming/in_post.php', data)
+    .then(response => {
+      console.log('Dati inviati con successo:', response.data);
+      // Mostra la risposta del server nel footer
+      responseElement.textContent = JSON.stringify(response.data);
+    })
+    .catch(error => {
+      console.error('Errore durante l\'invio dei dati:', error.response ? error.response.data : error.message);
+      // Mostra l'errore del server nel footer
+      responseElement.textContent = error.response ? JSON.stringify(error.response.data) : error.message;
+    });
+}
+
 
   postDataElement.textContent = data.toString();
 
