@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scansione Codice a Barre</title>
+
+  <!-- Inclusione di Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Inclusione del file CSS personalizzato -->
+  <link rel="stylesheet" href="assets/index.css">
+
+  <!-- Inclusione di Axios -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  
+  <!-- Inclusione di ZXing -->
+  <script src="https://unpkg.com/@zxing/library@latest"></script>
+</head>
+<body>
+  <div class="main-container">
+    <!-- Contenuto principale con la finestra di scansione -->
+    <div class="content">
+      <!-- Video per la scansione del codice a barre -->
+      <video id="video" class="mb-3"></video>
+      <!-- Linea di scansione rossa -->
+      <div id="scan-line"></div>
+    </div>
+
+    <!-- Pulsante in basso -->
+    <div class="footer-btn">
+      <button id="start-scan" class="btn btn-primary btn-lg">Scan</button>
+    </div>
+
+    <!-- Footer con i risultati -->
+    <footer>
+      <div class="footer-content">
+        <p class="barcode-result"><span id="barcode-result">None</span></p>
+        <p>Latitude: <span id="latitude">Unknown</span></p>
+        <p>Longitude: <span id="longitude">Unknown</span></p>
+        <p>Accuracy: <span id="accuracy">Unknown</span></p>
+        <p>Altitude: <span id="altitude">Unknown</span></p>
+        <p>Timestamp: <span id="timestamp">N/A</span></p>
+        <p>Bearing: <span id="bearing">Unknown</span></p>
+        <p>Speed: <span id="speed">Unknown</span></p>
+        <p>POST Data: <span id="post-data">N/A</span></p>
+        <p>Response: <span id="server-response">N/A</span></p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Inclusione del file JavaScript personalizzato -->
+  <script src="assets/app.js"></script>
+</body>
+</html>

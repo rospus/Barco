@@ -1,65 +1,64 @@
-/* Stili generali */
+/* Stili scan.html */
 body, html {
-    height: 100%;
-    margin: 0;
-  }
-  
-  /* Layout principale */
-  .main-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-  
-  /* Video e area di scansione */
-  .content {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    position: relative;
-  }
-  
-  #video {
-    width: 100%;
-    height: 100vw;
-    max-height: 100%;
-    object-fit: cover;
-    display: none;
-  }
-  
-  #scan-line {
-    width: 60%;
-    height: 2px;
-    background-color: red;
-    opacity: 0.2;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-    display: none;
-  }
-  
-  /* Footer */
-  footer {
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    background-color: #f8f9fa;
-    font-size: 12px;
-    line-height: 0.25;
-  }
-  
-  .barcode-result {
-    font-size: 24px;
-    text-align: center;
-    font-weight: bold;
-  }
-  
-  .footer-btn {
-    display: flex;
-    justify-content: center;
-  }
-  
+  height: 100%;
+  margin: 0;
+}
+
+/* Layout principale */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Video e area di scansione */
+.content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+}
+
+#video {
+  width: 100%;
+  height: 100vw;
+  max-height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+#scan-line {
+  width: 60%;
+  height: 2px;
+  background-color: red;
+  opacity: 0.2;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: none;
+}
+
+/* Footer */
+footer {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background-color: #f8f9fa;
+  font-size: 12px;
+  line-height: 0.25;
+}
+
+.barcode-result {
+  font-size: 24px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.footer-btn {
+  display: flex;
+  justify-content: center;
+}
