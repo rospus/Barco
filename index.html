@@ -58,16 +58,17 @@
         <table class="table">
             <tbody>
                 <tr>
-                    <td style="width: 30%;">Agenzia</td>
-                    <td style="width: 50%;">
+                    <td style="width: 25%;">Agenzia</td>
+                    <td style="width: 55%;">
                         <div class="input-group">
-                            <input type="text" id="agencyName" class="form-control" placeholder="Seleziona..." disabled>
+                            <input type="text" id="agencyName" class="form-control" placeholder="Selezionare..." disabled>
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <span class="material-icons">menu</span>
                             </button>
                             <ul class="dropdown-menu" id="menuAgencies">
                                 <li><a class="dropdown-item" href="#">Monteprandone</a></li>
                                 <li><a class="dropdown-item" href="#">Pescara</a></li>
+                                <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="#">Altro...</a></li>
                             </ul>
                         </div>
@@ -78,7 +79,7 @@
                     <td>Utente</td>
                     <td>
                         <div class="input-group">
-                            <input type="text" id="userName" class="form-control" placeholder="Seleziona..." disabled>
+                            <input type="text" id="userName" class="form-control" placeholder="Selezionare..." disabled>
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <span class="material-icons">menu</span>
                             </button>
@@ -86,6 +87,7 @@
                                 <li><a class="dropdown-item" href="#">Postino 1</a></li>
                                 <li><a class="dropdown-item" href="#">Postino 2</a></li>
                                 <li><a class="dropdown-item" href="#">Postino 3</a></li>
+                                <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="#">Altro...</a></li>
                             </ul>
                         </div>
@@ -172,12 +174,15 @@
                 if (selectedOption === 'Monteprandone') {
                     agencyName.value = 'MPR';
                     agencyName.disabled = true;
+                    agencyName.placeholder = 'Selezionare...';
                 } else if (selectedOption === 'Pescara') {
                     agencyName.value = 'PSC';
                     agencyName.disabled = true;
+                    agencyName.placeholder = 'Selezionare...';
                 } else if (selectedOption === 'Altro...') {
                     agencyName.disabled = false;
                     agencyName.value = '';
+                    agencyName.placeholder = '';
                     agencyName.focus();
                 }
             });
@@ -187,10 +192,12 @@
                 if (selectedOption === 'Altro...') {
                     userName.disabled = false;
                     userName.value = '';
+                    userName.placeholder = '';
                     userName.focus();
                 } else {
                     userName.value = selectedOption;
                     userName.disabled = true;
+                    userName.placeholder = 'Selezionare...';
                 }
             });
         });
