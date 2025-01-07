@@ -58,7 +58,7 @@
         <table class="table align-middle">
             <tbody>
                 <tr>
-                    <td style="width: 25%;">Agenzia</td>
+                    <td style="width: 25%; text-align: right;">Agenzia</td>
                     <td style="width: 55%;">
                         <div class="input-group">
                             <input type="text" id="agencyName" class="form-control" placeholder="Selezionare..." disabled>
@@ -76,7 +76,7 @@
                     <td style="width: 20%;"></td>
                 </tr>
                 <tr>
-                    <td>Utente</td>
+                    <td style="text-align: right;">Utente</td>
                     <td>
                         <div class="input-group">
                             <input type="text" id="userName" class="form-control" placeholder="Selezionare..." disabled>
@@ -95,18 +95,23 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td>Punti</td>
+                    <td style="text-align: right;">Punti</td>
                     <td></td>
                     <td></td>
                 </tr>
                 <tr>
-                    <td>GPS</td>
+                    <td style="text-align: right;">GPS</td>
                     <td id="gps-status"></td>
                     <td id="gps-accuracy"></td>
                 </tr>
                 <tr>
-                    <td>Server</td>
-                    <td id="server-status"></td>
+                    <td style="text-align: right;">Server</td>
+                    <td id="server-status">
+                        <div class="d-flex justify-content-center align-items-center">
+                            <span class="material-icons">cloud_upload</span>
+                            <span class="ms-2">Server</span>
+                        </div>
+                    </td>
                     <td></td>
                 </tr>
             </tbody>
