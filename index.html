@@ -40,8 +40,10 @@
             color: white;
         }
         .small-text {
-            font-size: 0.75em;
+            font-size: 0.6em;
             line-height: 1.2;
+            display: inline-block;
+            margin-left: 10px;
         }
     </style>
 </head>
@@ -68,7 +70,7 @@
                 <tr>
                     <td>GPS</td>
                     <td id="gps-status"></td>
-                    <td></td>
+                    <td id="gps-accuracy"></td>
                 </tr>
                 <tr>
                     <td>Server</td>
@@ -82,8 +84,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const gpsStatusCell = document.getElementById('gps-status');
+            const gpsAccuracyCell = document.getElementById('gps-accuracy');
             const serverStatusCell = document.getElementById('server-status');
-            const startButton = document.getElementById('start-button');
 
             // GPS Check
             gpsStatusCell.innerHTML = '<span class="material-icons">autorenew</span> Recupero posizione...';
@@ -93,23 +95,25 @@
                     position => {
                         const lat = position.coords.latitude.toFixed(6);
                         const lon = position.coords.longitude.toFixed(6);
+                        const accuracy = position.coords.accuracy.toFixed(2);
                         const timestamp = new Date(position.timestamp).toISOString();
 
-                        sessionStorage.setItem('lastCoordStored', JSON.stringify({ lat, lon, timestamp }));
+                        sessionStorage.setItem('lastCoordStored', JSON.stringify({ lat, lon, accuracy, timestamp }));
 
                         gpsStatusCell.innerHTML = `
                             <span class="material-icons" style="color: green;">gps_fixed</span>
-                            <div class="small-text">
-                                ${lat}<br>${lon}
-                            </div>
+                            <span class="small-text">${lat}, ${lon}</span>
                         `;
+                        gpsAccuracyCell.innerHTML = `±${accuracy} m`;
                     },
                     error => {
                         gpsStatusCell.innerHTML = '<span class="material-icons" style="color: red;">gps_not_fixed</span>';
+                        gpsAccuracyCell.innerHTML = '';
                     }
                 );
             } else {
                 gpsStatusCell.innerHTML = '<span class="material-icons" style="color: red;">gps_not_fixed</span>';
+                gpsAccuracyCell.innerHTML = '';
             }
 
             // Server Ping Check
