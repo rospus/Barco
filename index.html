@@ -59,12 +59,37 @@
             <tbody>
                 <tr>
                     <td style="width: 30%;">Agenzia</td>
-                    <td style="width: 50%;"></td>
+                    <td style="width: 50%;">
+                        <div class="input-group">
+                            <input type="text" id="agencyName" class="form-control" placeholder="Seleziona..." disabled>
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="material-icons">menu</span>
+                            </button>
+                            <ul class="dropdown-menu" id="menuAgencies">
+                                <li><a class="dropdown-item" href="#">Monteprandone</a></li>
+                                <li><a class="dropdown-item" href="#">Pescara</a></li>
+                                <li><a class="dropdown-item" href="#">Altro...</a></li>
+                            </ul>
+                        </div>
+                    </td>
                     <td style="width: 20%;"></td>
                 </tr>
                 <tr>
                     <td>Utente</td>
-                    <td></td>
+                    <td>
+                        <div class="input-group">
+                            <input type="text" id="userName" class="form-control" placeholder="Seleziona..." disabled>
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="material-icons">menu</span>
+                            </button>
+                            <ul class="dropdown-menu" id="menuUsers">
+                                <li><a class="dropdown-item" href="#">Postino 1</a></li>
+                                <li><a class="dropdown-item" href="#">Postino 2</a></li>
+                                <li><a class="dropdown-item" href="#">Postino 3</a></li>
+                                <li><a class="dropdown-item" href="#">Altro...</a></li>
+                            </ul>
+                        </div>
+                    </td>
                     <td></td>
                 </tr>
                 <tr>
@@ -88,11 +113,16 @@
     </main>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const agencyName = document.getElementById('agencyName');
+            const menuAgencies = document.getElementById('menuAgencies');
+            const userName = document.getElementById('userName');
+            const menuUsers = document.getElementById('menuUsers');
+
+            // Restore GPS and Server Status Functionality
             const gpsStatusCell = document.getElementById('gps-status');
             const gpsAccuracyCell = document.getElementById('gps-accuracy');
             const serverStatusCell = document.getElementById('server-status');
 
-            // GPS Check
             gpsStatusCell.innerHTML = '<span class="material-icons">autorenew</span> Recupero posizione...';
 
             if (navigator.geolocation) {
@@ -125,7 +155,6 @@
                 gpsAccuracyCell.innerHTML = '';
             }
 
-            // Server Ping Check
             fetch('https://gips.xyz/incoming/in_post.php', { method: 'HEAD' })
                 .then(response => {
                     if (response.ok) {
@@ -137,6 +166,33 @@
                 .catch(() => {
                     serverStatusCell.innerHTML = '<span class="material-icons" style="color: red;">cloud_off</span>';
                 });
+
+            menuAgencies.addEventListener('click', (event) => {
+                const selectedOption = event.target.textContent;
+                if (selectedOption === 'Monteprandone') {
+                    agencyName.value = 'MPR';
+                    agencyName.disabled = true;
+                } else if (selectedOption === 'Pescara') {
+                    agencyName.value = 'PSC';
+                    agencyName.disabled = true;
+                } else if (selectedOption === 'Altro...') {
+                    agencyName.disabled = false;
+                    agencyName.value = '';
+                    agencyName.focus();
+                }
+            });
+
+            menuUsers.addEventListener('click', (event) => {
+                const selectedOption = event.target.textContent;
+                if (selectedOption === 'Altro...') {
+                    userName.disabled = false;
+                    userName.value = '';
+                    userName.focus();
+                } else {
+                    userName.value = selectedOption;
+                    userName.disabled = true;
+                }
+            });
         });
     </script>
     <!-- Include Bootstrap JS -->
