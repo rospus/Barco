@@ -44,6 +44,11 @@
             line-height: 1.2;
             display: inline-block;
             margin-left: 10px;
+            vertical-align: top;
+        }
+        .gps-container {
+            display: flex;
+            align-items: center;
         }
     </style>
 </head>
@@ -95,14 +100,18 @@
                     position => {
                         const lat = position.coords.latitude.toFixed(6);
                         const lon = position.coords.longitude.toFixed(6);
-                        const accuracy = position.coords.accuracy.toFixed(2);
+                        const accuracy = Math.round(position.coords.accuracy);
                         const timestamp = new Date(position.timestamp).toISOString();
 
                         sessionStorage.setItem('lastCoordStored', JSON.stringify({ lat, lon, accuracy, timestamp }));
 
                         gpsStatusCell.innerHTML = `
-                            <span class="material-icons" style="color: green;">gps_fixed</span>
-                            <span class="small-text">${lat}, ${lon}</span>
+                            <div class="gps-container">
+                                <span class="material-icons" style="color: green;">gps_fixed</span>
+                                <span class="small-text">
+                                    ${lat}<br>${lon}
+                                </span>
+                            </div>
                         `;
                         gpsAccuracyCell.innerHTML = `±${accuracy} m`;
                     },
