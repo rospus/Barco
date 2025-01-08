@@ -105,14 +105,13 @@
                     <td id="gps-accuracy"></td>
                 </tr>
                 <tr>
-                    <td style="text-align: right;">Server</td>
+                    <td style="text-align: right;">SaaS</td>
                     <td id="server-status">
                         <div class="d-flex justify-content-center align-items-center">
-                            <span class="material-icons">cloud_upload</span>
-                            <span class="ms-2">Server</span>
+                            <span class="material-icons"></span>
+                            <span class="ms-2">Verifica connessione...</span>
                         </div>
-                    </td>
-                    <td></td>
+                    </td>             
                 </tr>
             </tbody>
         </table>
@@ -165,13 +164,13 @@
             fetch('https://gips.xyz/incoming/in_post.php', { method: 'HEAD' })
                 .then(response => {
                     if (response.ok) {
-                        serverStatusCell.innerHTML = '<span class="material-icons" style="color: green;">cloud_upload</span>';
+                        serverStatusCell.innerHTML = '<span class="material-icons" style="color: green;">sync</span>';
                     } else {
-                        serverStatusCell.innerHTML = '<span class="material-icons" style="color: red;">cloud_off</span>';
+                        serverStatusCell.innerHTML = '<span class="material-icons" style="color: red;">sync_disabled</span>';
                     }
                 })
                 .catch(() => {
-                    serverStatusCell.innerHTML = '<span class="material-icons" style="color: red;">cloud_off</span>';
+                    serverStatusCell.innerHTML = '<span class="material-icons" style="color: red;">sync_disabled</span>';
                 });
 
             menuAgencies.addEventListener('click', (event) => {
