@@ -8,11 +8,12 @@ const altitudeElement = document.getElementById('altitude');
 const timestampElement = document.getElementById('timestamp');
 const bearingElement = document.getElementById('bearing');
 const speedElement = document.getElementById('speed');
+const postDataElement = document.getElementById('post-data');
 const responseElement = document.getElementById('server-response');
 const startScanButton = document.getElementById('start-scan');
 const scanLineElement = document.getElementById('scan-line');
 
-// Funzione per ottenere il timestamp GPS in formato ISO 8601
+// Funzioni principali
 function getGPSTimestamp(position) {
   const date = new Date(position.timestamp);
   const offset = -date.getTimezoneOffset();
@@ -24,7 +25,6 @@ function getGPSTimestamp(position) {
   return `${isoString}.${milliseconds}${sign}${hours}:${minutes}`;
 }
 
-// Funzione per ottenere le coordinate GPS
 function getGPSLocation() {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition((position) => {
@@ -32,32 +32,21 @@ function getGPSLocation() {
       latitudeElement.textContent = coords.latitude;
       longitudeElement.textContent = coords.longitude;
       accuracyElement.textContent = coords.accuracy + ' meters';
-      altitudeElement.textContent = coords.altitude !== null ? coords.altitude + ' meters' : 'Not available';
+      altitudeElement.textContent = coords.altitude || 'Not available';
       timestampElement.textContent = getGPSTimestamp(position);
-      bearingElement.textContent = coords.heading !== null ? coords.heading + ' degrees' : 'Not available';
-      speedElement.textContent = coords.speed !== null ? coords.speed + ' m/s' : 'Not available';
+      bearingElement.textContent = coords.heading || 'Not available';
+      speedElement.textContent = coords.speed || 'Not available';
+
+      // Invia dati al server
+      postDataToServer(coords, getGPSTimestamp(position));
     }, (error) => {
       console.error('Error getting location', error);
-      latitudeElement.textContent = "Unable to get location";
-      longitudeElement.textContent = "Unable to get location";
-      accuracyElement.textContent = "Unavailable";
-      altitudeElement.textContent = "Unavailable";
-      timestampElement.textContent = "Unavailable";
-      bearingElement.textContent = "Unavailable";
-      speedElement.textContent = "Unavailable";
     });
   } else {
-    latitudeElement.textContent = "Geolocation not supported";
-    longitudeElement.textContent = "Geolocation not supported";
-    accuracyElement.textContent = "Unavailable";
-    altitudeElement.textContent = "Unavailable";
-    timestampElement.textContent = "Unavailable";
-    bearingElement.textContent = "Unavailable";
-    speedElement.textContent = "Unavailable";
+    console.error('Geolocation not supported');
   }
 }
 
-// Funzione per inviare i dati al server
 function postDataToServer(coords, timestamp) {
   const data = new URLSearchParams({
     nome_disp: "ONL00",
@@ -74,16 +63,17 @@ function postDataToServer(coords, timestamp) {
     velocita: coords.speed || 'N/A'
   });
 
+  postDataElement.textContent = data.toString();
+
   axios.post('https://gips.xyz/incoming/in_post.php', data)
     .then(response => {
       responseElement.textContent = JSON.stringify(response.data);
     })
     .catch(error => {
-      responseElement.textContent = error.response ? JSON.stringify(error.response.data) : error.message;
+      responseElement.textContent = error.message;
     });
 }
 
-// Funzione per avviare la scansione
 function startBarcodeScan() {
   videoElement.style.display = 'block';
   scanLineElement.style.display = 'block';
@@ -114,10 +104,5 @@ function startBarcodeScan() {
     .catch(err => console.error('Error accessing camera', err));
 }
 
-// Attiva il GPS al caricamento della pagina
-window.onload = () => {
-  getGPSLocation();
-};
-
-// Event listener per il pulsante Scan
+// Event listener
 startScanButton.addEventListener('click', startBarcodeScan);
