@@ -138,10 +138,11 @@
 
                         gpsStatusCell.innerHTML = `
                             <div class="gps-container">
-    <span class="material-icons" style="color: green;">gps_fixed</span>
-    <span class="small-text">${lat}, ${lon}
+                                <span class="material-icons" style="color: green;">gps_fixed</span>
+                                <span class="small-text">
+                                    ${lat}, ${lon}
                                 </span>
-</div>
+                            </div>
                         `;
                         gpsAccuracyCell.innerHTML = `±${accuracy} m`;
                     },
@@ -172,6 +173,7 @@
                 agencyName.value = selectedOption;
                 agencyName.disabled = true;
                 agencyName.placeholder = 'Selezionare...';
+                sessionStorage.setItem('sessionAgency', selectedOption);
             });
 
             menuUsers.addEventListener('click', (event) => {
@@ -185,6 +187,7 @@
                     userName.value = selectedOption;
                     userName.disabled = true;
                     userName.placeholder = 'Selezionare...';
+                    sessionStorage.setItem('sessionUser', selectedOption);
                 }
             });
         });
