@@ -58,7 +58,7 @@
             <tbody>
                 <tr>
                     <td style="width: 25%; text-align: right;">Agenzia</td>
-                    <td style="width: 60%;">
+                    <td style="width: 75%;">
                         <div class="input-group">
                             <input type="text" id="agencyName" class="form-control" placeholder="Selezionare..." aria-label="Agency Name" disabled>
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -72,11 +72,11 @@
                             </ul>
                         </div>
                     </td>
-                    <td style="width: 15%;"></td>
+                    
                 </tr>
                 <tr>
                     <td style="text-align: right;">Utente</td>
-                    <td>
+                    <td style="width: 75%;">
                         <div class="input-group">
                             <input type="text" id="userName" class="form-control" placeholder="Selezionare..." aria-label="User Name" disabled>
                             <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -91,19 +91,18 @@
                             </ul>
                         </div>
                     </td>
-                    <td></td>
-                </tr>
-                <tr style="height: 30px;">
+                    </tr>
+                <tr style="height: 40px;">
                     <td style="text-align: right;">Punti</td>
                     <td></td>
                     <td></td>
                 </tr>
-                <tr style="height: 30px;">
+                <tr style="height: 40px;">
                     <td style="text-align: right;">GPS</td>
                     <td id="gps-status"></td>
                     <td id="gps-accuracy" class="small-text"></td>
                 </tr>
-                <tr style="height: 30px;">
+                <tr style="height: 40px;">
                     <td style="text-align: right;">SaaS</td>
                     <td id="server-status">
                         <div class="d-flex justify-content-center align-items-center">
@@ -143,11 +142,10 @@
 
                         gpsStatusCell.innerHTML = `
                             <div class="gps-container">
-                                <span class="material-icons" style="color: green;">gps_fixed</span>
-                                <span class="small-text">
-                                    ${lat}<br>${lon}
+    <span class="material-icons" style="color: green;">gps_fixed</span>
+    <span class="small-text">${lat}, ${lon}
                                 </span>
-                            </div>
+</div>
                         `;
                         gpsAccuracyCell.innerHTML = `±${accuracy} m`;
                     },
