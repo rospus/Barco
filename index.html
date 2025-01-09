@@ -58,11 +58,11 @@
         <table class="table align-middle border-0 table-borderless">
             <tbody>
                 <tr>
-                    <td style="text-align: right;">Agenzia</td>
-                    <td>
+                    <td style="width: 25%; text-align: right;">Agenzia</td>
+                    <td style="width: 55%;">
                         <div class="input-group">
-                            <input type="text" id="agencyName" class="form-control" placeholder="Selezionare..." disabled>
-                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Select Agency">
+                            <input type="text" id="agencyName" class="form-control" placeholder="Selezionare..." aria-label="Agency Name" disabled>
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <span class="material-icons">menu</span>
                             </button>
                             <ul class="dropdown-menu" id="menuAgencies">
@@ -79,8 +79,8 @@
                     <td style="text-align: right;">Utente</td>
                     <td>
                         <div class="input-group">
-                            <input type="text" id="userName" class="form-control" placeholder="Selezionare..." disabled>
-                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Select User">
+                            <input type="text" id="userName" class="form-control" placeholder="Selezionare..." aria-label="User Name" disabled>
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <span class="material-icons">menu</span>
                             </button>
                             <ul class="dropdown-menu" id="menuUsers">
@@ -94,17 +94,17 @@
                     </td>
                     <td></td>
                 </tr>
-                <tr style="height: 40px;">
+                <tr style="height: 30px;">
                     <td style="text-align: right;">Punti</td>
                     <td></td>
                     <td></td>
                 </tr>
-                <tr style="height: 40px;">
+                <tr style="height: 30px;">
                     <td style="text-align: right;">GPS</td>
                     <td id="gps-status"></td>
                     <td id="gps-accuracy"></td>
                 </tr>
-                <tr style="height: 40px;">
+                <tr style="height: 30px;">
                     <td style="text-align: right;">SaaS</td>
                     <td id="server-status">
                         <div class="d-flex justify-content-center align-items-center">
@@ -112,13 +112,18 @@
                             <span class="ms-2">Verifica connessione...</span>
                         </div>
                     </td>
-                    <td></td>
+                  <td></td>
                 </tr>
             </tbody>
         </table>
         <button class="btn btn-start" id="start-button" onclick="window.location.replace('scan.html')">INIZIO SESSIONE</button>
     </main>
     <script>
+        // Early check for geolocation availability
+        if (!navigator.geolocation) {
+            alert("Geolocation is not supported by your browser.");
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const agencyName = document.getElementById('agencyName');
             const menuAgencies = document.getElementById('menuAgencies');
