@@ -32,18 +32,28 @@ function getGPSLocation() {
       latitudeElement.textContent = coords.latitude;
       longitudeElement.textContent = coords.longitude;
       accuracyElement.textContent = coords.accuracy + ' meters';
-      altitudeElement.textContent = coords.altitude || 'Not available';
+      altitudeElement.textContent = coords.altitude !== null ? coords.altitude + ' meters' : 'Not available';
       timestampElement.textContent = getGPSTimestamp(position);
-      bearingElement.textContent = coords.heading || 'Not available';
-      speedElement.textContent = coords.speed || 'Not available';
-
-      // Invia dati al server
-      postDataToServer(coords, getGPSTimestamp(position));
+      bearingElement.textContent = coords.heading !== null ? coords.heading + ' degrees' : 'Not available';
+      speedElement.textContent = coords.speed !== null ? coords.speed + ' m/s' : 'Not available';
     }, (error) => {
       console.error('Error getting location', error);
+      latitudeElement.textContent = "Unable to get location";
+      longitudeElement.textContent = "Unable to get location";
+      accuracyElement.textContent = "Unavailable";
+      altitudeElement.textContent = "Unavailable";
+      timestampElement.textContent = "Unavailable";
+      bearingElement.textContent = "Unavailable";
+      speedElement.textContent = "Unavailable";
     });
   } else {
-    console.error('Geolocation not supported');
+    latitudeElement.textContent = "Geolocation not supported";
+    longitudeElement.textContent = "Geolocation not supported";
+    accuracyElement.textContent = "Unavailable";
+    altitudeElement.textContent = "Unavailable";
+    timestampElement.textContent = "Unavailable";
+    bearingElement.textContent = "Unavailable";
+    speedElement.textContent = "Unavailable";
   }
 }
 
@@ -104,5 +114,10 @@ function startBarcodeScan() {
     .catch(err => console.error('Error accessing camera', err));
 }
 
-// Event listener
+// Attiva il GPS al caricamento della pagina
+window.onload = () => {
+  getGPSLocation();
+};
+
+// Event listener per il pulsante Scan
 startScanButton.addEventListener('click', startBarcodeScan);
