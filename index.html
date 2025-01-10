@@ -114,6 +114,19 @@
     </main>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Check sessionStorage for saved values
+            const savedAgency = sessionStorage.getItem('sessionAgency');
+            const savedUser = sessionStorage.getItem('sessionUser');
+            if (savedAgency) {
+                const agencyName = document.getElementById('agencyName');
+                agencyName.value = savedAgency;
+                agencyName.disabled = true;
+            }
+            if (savedUser) {
+                const userName = document.getElementById('userName');
+                userName.value = savedUser;
+                userName.disabled = true;
+            }
             const agencyName = document.getElementById('agencyName');
             const menuAgencies = document.getElementById('menuAgencies');
             const userName = document.getElementById('userName');
