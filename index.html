@@ -45,10 +45,16 @@
             margin-left: 10px;
             vertical-align: top;
         }
-        .gps-container {
-            display: flex;
-            align-items: center;
-        }
+.gps-container {
+    display: flex;
+    flex-direction: row; /* Disposizione orizzontale */
+    align-items: flex-start; /* Allineamento verticale all'inizio (alto) */
+}
+
+.gps-text-container { /* Nuovo contenitore per il testo */
+    display: flex;
+    flex-direction: column; /* Disposizione verticale del testo */
+}
     </style>
 </head>
 <body>
@@ -70,7 +76,6 @@
                             </ul>
                         </div>
                     </td>
-                    
                 </tr>
                 <tr>
                     <td style="text-align: right;">Utente</td>
@@ -87,16 +92,21 @@
                             </ul>
                         </div>
                     </td>
-                    </tr>
+                </tr>
                 <tr style="height: 40px;">
                     <td style="text-align: right;">Punti</td>
-                    <td></td>
                     <td></td>
                 </tr>
                 <tr style="height: 40px;">
                     <td style="text-align: right;">GPS</td>
-                    <td id="gps-status"></td>
-                    <td id="gps-accuracy" class="small-text"></td>
+                    <td id="gps-status">
+                        <div class="gps-container">
+                            <span class="material-icons" style="color: green;">gps_fixed</span>
+                            <div class="gps-text-container"> <span class="small-text" id="gps-coordinates">Recupero posizione...</span>
+                                <span class="small-text" id="gps-accuracy">±0 m</span>
+                            </div>
+                        </div>
+                    </td>
                 </tr>
                 <tr style="height: 40px;">
                     <td style="text-align: right;">SaaS</td>
@@ -106,7 +116,6 @@
                             <span id="network-latency" class="small-text ms-2">Misurazione in corso...</span>
                         </div>
                     </td>
-                  <td></td>
                 </tr>
             </tbody>
         </table>
@@ -120,7 +129,8 @@
         const userName = document.getElementById('userName');
         const menuUsers = document.getElementById('menuUsers');
         const gpsStatusCell = document.getElementById('gps-status');
-        const gpsAccuracyCell = document.getElementById('gps-accuracy');
+        const gpsCoordinates = document.getElementById('gps-coordinates');
+        const gpsAccuracy = document.getElementById('gps-accuracy');
         const serverStatusCell = document.getElementById('server-status');
         const networkLatency = document.getElementById('network-latency');
 
@@ -168,7 +178,7 @@
             });
 
         // Recupero GPS
-        gpsStatusCell.innerHTML = '<span class="material-icons">autorenew</span> Recupero posizione...';
+        gpsCoordinates.textContent = 'Recupero posizione...';
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 position => {
@@ -179,24 +189,17 @@
 
                     sessionStorage.setItem('lastCoordStored', JSON.stringify({ lat, lon, accuracy, timestamp }));
 
-                    gpsStatusCell.innerHTML = `
-                        <div class="gps-container">
-                            <span class="material-icons" style="color: green;">gps_fixed</span>
-                            <span class="small-text">
-                                ${lat}, ${lon}
-                            </span>
-                        </div>
-                    `;
-                    gpsAccuracyCell.innerHTML = `±${accuracy} m`;
+                    gpsCoordinates.textContent = `${lat}, ${lon}`;
+                    gpsAccuracy.textContent = `±${accuracy} m`;
                 },
                 error => {
-                    gpsStatusCell.innerHTML = '<span class="material-icons" style="color: red;">gps_not_fixed</span>';
-                    gpsAccuracyCell.innerHTML = '';
+                    gpsCoordinates.textContent = 'Errore GPS';
+                    gpsAccuracy.textContent = '';
                 }
             );
         } else {
-            gpsStatusCell.innerHTML = '<span class="material-icons" style="color: red;">gps_not_fixed</span>';
-            gpsAccuracyCell.innerHTML = '';
+            gpsCoordinates.textContent = 'GPS non disponibile';
+            gpsAccuracy.textContent = '';
         }
 
         // Eventi menu
