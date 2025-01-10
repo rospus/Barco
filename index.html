@@ -101,9 +101,9 @@
                 <tr style="height: 40px;">
                     <td style="text-align: right;">SaaS</td>
                     <td id="server-status">
-                        <div class="d-flex justify-content-center align-items-center">
-                            <span class="material-icons"></span>
-                            <span class="ms-2">Verifica connessione...</span>
+                        <div class="d-flex align-items-center">
+                            <span class="material-icons" style="color: green;">sync</span>
+                            <span id="network-latency" class="small-text ms-2">Misurazione in corso...</span>
                         </div>
                     </td>
                   <td></td>
@@ -113,98 +113,115 @@
         <button class="btn btn-start" id="start-button" onclick="window.location.href='scan.html'">INIZIO SESSIONE</button>
     </main>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Check sessionStorage for saved values
-            const savedAgency = sessionStorage.getItem('sessionAgency');
-            const savedUser = sessionStorage.getItem('sessionUser');
-            if (savedAgency) {
-                const agencyName = document.getElementById('agencyName');
-                agencyName.value = savedAgency;
-                agencyName.disabled = true;
-            }
-            if (savedUser) {
-                const userName = document.getElementById('userName');
-                userName.value = savedUser;
-                userName.disabled = true;
-            }
-            const agencyName = document.getElementById('agencyName');
-            const menuAgencies = document.getElementById('menuAgencies');
-            const userName = document.getElementById('userName');
-            const menuUsers = document.getElementById('menuUsers');
+    document.addEventListener('DOMContentLoaded', () => {
+        // Definizione elementi DOM
+        const agencyName = document.getElementById('agencyName');
+        const menuAgencies = document.getElementById('menuAgencies');
+        const userName = document.getElementById('userName');
+        const menuUsers = document.getElementById('menuUsers');
+        const gpsStatusCell = document.getElementById('gps-status');
+        const gpsAccuracyCell = document.getElementById('gps-accuracy');
+        const serverStatusCell = document.getElementById('server-status');
+        const networkLatency = document.getElementById('network-latency');
 
-            // Restore GPS and Server Status Functionality
-            const gpsStatusCell = document.getElementById('gps-status');
-            const gpsAccuracyCell = document.getElementById('gps-accuracy');
-            const serverStatusCell = document.getElementById('server-status');
+        // Recupero valori da sessionStorage
+        const savedAgency = sessionStorage.getItem('sessionAgency');
+        const savedUser = sessionStorage.getItem('sessionUser');
+        if (savedAgency) {
+            agencyName.value = savedAgency;
+            agencyName.disabled = true;
+        }
+        if (savedUser) {
+            userName.value = savedUser;
+            userName.disabled = true;
+        }
 
-            gpsStatusCell.innerHTML = '<span class="material-icons">autorenew</span> Recupero posizione...';
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    position => {
-                        const lat = position.coords.latitude.toFixed(6);
-                        const lon = position.coords.longitude.toFixed(6);
-                        const accuracy = Math.round(position.coords.accuracy);
-                        const timestamp = new Date(position.timestamp).toISOString();
-
-                        sessionStorage.setItem('lastCoordStored', JSON.stringify({ lat, lon, accuracy, timestamp }));
-
-                        gpsStatusCell.innerHTML = `
-                            <div class="gps-container">
-                                <span class="material-icons" style="color: green;">gps_fixed</span>
-                                <span class="small-text">
-                                    ${lat}, ${lon}
-                                </span>
-                            </div>
-                        `;
-                        gpsAccuracyCell.innerHTML = `±${accuracy} m`;
-                    },
-                    error => {
-                        gpsStatusCell.innerHTML = '<span class="material-icons" style="color: red;">gps_not_fixed</span>';
-                        gpsAccuracyCell.innerHTML = '';
-                    }
-                );
-            } else {
-                gpsStatusCell.innerHTML = '<span class="material-icons" style="color: red;">gps_not_fixed</span>';
-                gpsAccuracyCell.innerHTML = '';
-            }
-
-            fetch('https://gips.xyz/incoming/in_post.php', { method: 'HEAD' })
-                .then(response => {
-                    if (response.ok) {
-                        serverStatusCell.innerHTML = '<span class="material-icons" style="color: green;">sync</span>';
-                    } else {
-                        serverStatusCell.innerHTML = '<span class="material-icons" style="color: red;">sync_disabled</span>';
-                    }
-                })
-                .catch(() => {
-                    serverStatusCell.innerHTML = '<span class="material-icons" style="color: red;">sync_disabled</span>';
-                });
-
-            menuAgencies.addEventListener('click', (event) => {
-                const selectedOption = event.target.textContent;
-                agencyName.value = selectedOption;
-                agencyName.disabled = true;
-                agencyName.placeholder = 'Selezionare...';
-                sessionStorage.setItem('sessionAgency', selectedOption);
-            });
-
-            menuUsers.addEventListener('click', (event) => {
-                const selectedOption = event.target.textContent;
-                if (selectedOption === 'Altro...') {
-                    userName.disabled = false;
-                    userName.value = '';
-                    userName.placeholder = '';
-                    userName.focus();
+        // Misura latenza e aggiorna lo stato del server
+        const start = performance.now();
+        fetch('https://gips.xyz/incoming/in_post.php', { method: 'HEAD' })
+            .then(response => {
+                const end = performance.now();
+                const latency = Math.round(end - start);
+                if (response.ok) {
+                    serverStatusCell.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <span class="material-icons" style="color: green;">sync</span>
+                            <span class="small-text ms-2">${latency} ms</span>
+                        </div>
+                    `;
                 } else {
-                    userName.value = selectedOption;
-                    userName.disabled = true;
-                    userName.placeholder = 'Selezionare...';
-                    sessionStorage.setItem('sessionUser', selectedOption);
+                    serverStatusCell.innerHTML = `
+                        <div class="d-flex align-items-center">
+                            <span class="material-icons" style="color: red;">sync_disabled</span>
+                            <span class="small-text ms-2">Errore connessione</span>
+                        </div>
+                    `;
                 }
+            })
+            .catch(() => {
+                serverStatusCell.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <span class="material-icons" style="color: red;">sync_disabled</span>
+                        <span class="small-text ms-2">Errore connessione</span>
+                    </div>
+                `;
             });
+
+        // Recupero GPS
+        gpsStatusCell.innerHTML = '<span class="material-icons">autorenew</span> Recupero posizione...';
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    const lat = position.coords.latitude.toFixed(6);
+                    const lon = position.coords.longitude.toFixed(6);
+                    const accuracy = Math.round(position.coords.accuracy);
+                    const timestamp = new Date(position.timestamp).toISOString();
+
+                    sessionStorage.setItem('lastCoordStored', JSON.stringify({ lat, lon, accuracy, timestamp }));
+
+                    gpsStatusCell.innerHTML = `
+                        <div class="gps-container">
+                            <span class="material-icons" style="color: green;">gps_fixed</span>
+                            <span class="small-text">
+                                ${lat}, ${lon}
+                            </span>
+                        </div>
+                    `;
+                    gpsAccuracyCell.innerHTML = `±${accuracy} m`;
+                },
+                error => {
+                    gpsStatusCell.innerHTML = '<span class="material-icons" style="color: red;">gps_not_fixed</span>';
+                    gpsAccuracyCell.innerHTML = '';
+                }
+            );
+        } else {
+            gpsStatusCell.innerHTML = '<span class="material-icons" style="color: red;">gps_not_fixed</span>';
+            gpsAccuracyCell.innerHTML = '';
+        }
+
+        // Eventi menu
+        menuAgencies.addEventListener('click', event => {
+            const selectedOption = event.target.textContent;
+            agencyName.value = selectedOption;
+            agencyName.disabled = true;
+            sessionStorage.setItem('sessionAgency', selectedOption);
         });
-    </script>
+
+        menuUsers.addEventListener('click', event => {
+            const selectedOption = event.target.textContent;
+            if (selectedOption === 'Altro...') {
+                userName.disabled = false;
+                userName.value = '';
+                userName.placeholder = '';
+                userName.focus();
+            } else {
+                userName.value = selectedOption;
+                userName.disabled = true;
+                sessionStorage.setItem('sessionUser', selectedOption);
+            }
+        });
+    });
+</script>
     <!-- Include Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
